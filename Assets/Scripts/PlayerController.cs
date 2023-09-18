@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 10;
     public TextMeshProUGUI countText;
+    public float timeLeft = 60.0f;
+    public TextMeshProUGUI countdownText;
     public Transform respawnPoint;
     public MenuController menuController;
 
@@ -25,6 +27,7 @@ public class PlayerController : MonoBehaviour
         pop = GetComponent<AudioSource>();
 
         SetCountText();
+        SetCountdownText();
     }
 
     private void Update()
@@ -33,6 +36,10 @@ public class PlayerController : MonoBehaviour
         {
             Respawn();
         }
+
+        timeLeft -= Time.deltaTime;
+        SetCountdownText();
+        
     }
 
     void OnMove(InputValue movementValue)
@@ -49,6 +56,17 @@ public class PlayerController : MonoBehaviour
         if (count >= 12)
         {
             menuController.WinGame();
+            gameObject.SetActive(false);
+        }
+    }
+
+    void SetCountdownText()
+    {
+        countdownText.text = "Time Left: " + timeLeft.ToString("0.00");
+        if (timeLeft <= 0)
+        {
+            countdownText.text = "Time's Up!";
+            menuController.LoseGame();
             gameObject.SetActive(false);
         }
     }
@@ -87,5 +105,6 @@ public class PlayerController : MonoBehaviour
         rb.Sleep();
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
+        timeLeft = 60.0f;
     }
 }
